@@ -1,0 +1,35 @@
+{
+  "name": "rxjs-playground",
+  "version": "0.0.0",
+  "description": "Demonstrates some RxJS basics",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NWRichmond/rxjs-playground.git"
+  },
+  "author": "Nick Richmond",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NWRichmond/rxjs-playground/issues"
+  },
+  "homepage": "https://github.com/NWRichmond/rxjs-playground#readme",
+  "devDependencies": {
+    "@types/node": "^14.14.35",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.2",
+    "@types/react-router-dom": "^5.1.7",
+    "@vitejs/plugin-react-refresh": "^1.3.1",
+    "typescript": "^4.2.3",
+    "vite": "^2.1.2"
+  },
+  "dependencies": {
+    "firebase": "^8.3.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "rxjs": "^6.6.6"
+  }
+}
