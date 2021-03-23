@@ -1,25 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Emilys+Candy&display=swap");
-
 * {
   box-sizing: border-box;
 }
 
 html,
 body {
+  font-family: "Share Tech Mono", monospace;
   overscroll-behavior-y: contain;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   user-select: none;
-  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir,
-    helvetica neue, helvetica, ubuntu, roboto, noto, segoe ui, arial, sans-serif;
   position: fixed;
   overflow: hidden;
 }
 
 #root {
-  background: rgb(255, 197, 252);
+  background: rgb(236, 236, 236);
   position: fixed;
   overflow: hidden;
   width: 100%;
@@ -31,4 +28,5 @@ body {
 
 button {
   font-size: calc(10px + 2vmin);
+  font-family: "Share Tech Mono", monospace;
 }
