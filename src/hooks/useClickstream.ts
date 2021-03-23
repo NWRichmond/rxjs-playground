@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { fromEvent, timer } from "rxjs";
 import {
   debounceTime,
@@ -7,35 +7,34 @@ import {
   takeUntil,
   takeLast,
 } from "rxjs/operators";
+
 import { useFirebase } from "~/hooks";
 
-const canvas = document.getElementsByTagName("canvas");
-const pointerDown$ = fromEvent<PointerEvent>(canvas, "pointerdown");
-const pointerUp$ = fromEvent<PointerEvent>(canvas, "pointerup");
-
-const ms = 50;
-const timerStream$ = pointerDown$.pipe(
-  // start counting at time 'ms', and keep counting
-  // every interval of 'ms', until the pointer comes up,
-  // at which point we're only interested in the final value
-  switchMap(() => timer(ms, ms).pipe(takeUntil(pointerUp$), takeLast(1)))
-);
-
-export function useClickstream({ user, setClickCount, setClickDuration }) {
+export function useClickstream({
+  user,
+  setClickCount,
+  setClickDuration,
+  timerInterval = 50,
+}) {
   const { db } = useFirebase();
+  const canvas = useRef(null);
 
   useEffect(() => {
+    canvas.current = document.getElementsByTagName("canvas");
+    const pointerDown$ = fromEvent<PointerEvent>(canvas.current, "pointerdown");
+    const pointerUp$ = fromEvent<PointerEvent>(canvas.current, "pointerup");
+
     pointerUp$
       .pipe(
         // debounce inputs
-        debounceTime(ms),
+        debounceTime(timerInterval),
 
         // count the total number of clicks
         scan((count) => count + 1, 0)
       )
       .subscribe((count) => {
-        console.log(`Clicked ${count} times`);
         setClickCount(count);
+        console.log(`Clicked ${count} times`);
 
         if (user?.uid) {
           const { displayName, uid } = user;
@@ -51,10 +50,22 @@ export function useClickstream({ user, setClickCount, setClickDuration }) {
         }
       });
 
+    const timerStream$ = pointerDown$.pipe(
+      // start counting at time 'timerInterval', and keep counting
+      // every interval of 'timerInterval', until the pointer comes up,
+      // at which point we're only interested in the final value
+      switchMap(() =>
+        timer(timerInterval, timerInterval).pipe(
+          takeUntil(pointerUp$),
+          takeLast(1)
+        )
+      )
+    );
+
     timerStream$.subscribe((val) => {
-      const durationSeconds = val / (1000 / ms);
-      console.log(`${durationSeconds} seconds`);
+      const durationSeconds = val / (1000 / timerInterval);
       setClickDuration(durationSeconds);
+      console.log(`Drew for: ${durationSeconds} seconds`);
 
       if (user?.uid) {
         const { displayName, uid } = user;
@@ -69,5 +80,5 @@ export function useClickstream({ user, setClickCount, setClickDuration }) {
         );
       }
     });
-  }, [db, user]);
+  }, [db, user, canvas.current]);
 }
