@@ -21,9 +21,16 @@ body {
   overflow: hidden;
   width: 100%;
   height: 100%;
+}
+
+canvas {
   cursor: url("https://user-images.githubusercontent.com/5732000/111932309-8b7d4380-8a93-11eb-8151-44b40b2e65aa.png")
       10 10,
     auto;
+}
+
+img {
+  cursor: pointer;
 }
 
 button {
