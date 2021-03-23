@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 
-import { useFirebase } from "~/hooks";
-import { LoginWithGoogle, UserWelcome } from "~/components";
+import { useFirebase, useClickstream } from "~/hooks";
+import { Header, Canvas } from "~/components";
 import { UserContext } from "~/context";
 import "./App.css";
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [clickCount, setClickCount] = useState(0);
+  const [clickDuration, setClickDuration] = useState(0);
+
+  useClickstream({ user, setClickCount, setClickDuration });
   useFirebase(); // initialize Firebase
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      <LoginWithGoogle />
-      <UserWelcome />
-      <p className="welcome">Let's Get Clickstreamy!</p>
+      <Header clickCount={clickCount} clickDuration={clickDuration} />
+      <Canvas />
     </UserContext.Provider>
   );
 }
