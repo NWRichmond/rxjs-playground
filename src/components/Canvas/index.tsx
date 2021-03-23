@@ -1,4 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { fromEvent, timer } from "rxjs";
+import { map, debounce } from "rxjs/operators";
 
 interface canvasProps {
   pageX?: number;
@@ -10,6 +12,10 @@ export default function Canvas({ pageX = 100, pageY = 100 }: canvasProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastCoords, setLastCoords] = useState([0, 0]);
   const [hue, setHue] = useState(0);
+  const resizeCanvas = useCallback(() => {
+    canvas.current.width = window.innerWidth * (pageX / 100);
+    canvas.current.height = window.innerHeight * (pageY / 100);
+  }, [canvas.current]);
 
   // event handlers
   const enableDrawing = () => setIsDrawing(true);
@@ -34,18 +40,30 @@ export default function Canvas({ pageX = 100, pageY = 100 }: canvasProps) {
   };
 
   useEffect(() => {
+    // TS non-null assertion operator w/dot '!.' explained:
+    // (1) assert that canvas is non-null,
+    // (2) access canvas.current
     if (canvas!.current) {
-      const ctx = canvas.current.getContext("2d");
-      canvas.current.width = window.innerWidth * (pageX / 100);
-      canvas.current.height = window.innerHeight * (pageY / 100);
+      resizeCanvas();
 
+      const ctx = canvas.current.getContext("2d");
       if (ctx !== null) {
         ctx.strokeStyle = "#BADA55";
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
       }
+
+      // listen for (and debounce) future window resizes, e.g. due to
+      // devtools opening / closing, then resize canvas
+      fromEvent(window, "resize")
+        .pipe(
+          debounce(() => timer(500)),
+          map(() => resizeCanvas())
+        )
+        .subscribe();
     }
   }, [canvas]);
+
   return (
     <canvas
       ref={canvas}
